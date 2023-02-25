@@ -2,18 +2,20 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-export default function Home(props) {
-  const { products } = props;
+export default function Home({ product }) {
 
-  if (!products) return (<div>Loading...</div>)
+  function deleteProducts(id) {
+    fetch(`https://stock-next-nine.vercel.app/api/customer/product/${id}`,
+      {
+        method: 'DELETE'
+      })
+      .then(rest => rest.json())
+      .then(data => {
+        // alert("Deleting " + id)
+        window.location.reload(false);
+      })
 
-  const list = products.map((product) => (
-    <li key={product.id}>
-      <Link href={`/product/${product.id}`}>
-        {product.title}
-      </Link>
-    </li>
-  ))
+  }
 
   return (
     <>
@@ -21,24 +23,34 @@ export default function Home(props) {
         <title>Products</title>
       </Head>
       <h1>Products</h1>
-      <div>
-        <ul>
-          {list}
-        </ul>
-      </div>
+      <table><tbody>
+        {
+          product.map(products => {
+            return (
+              <tr key={products._id}>
+                <td>
+                  <Link href={`/product/${products._id}`}>
+                    {products.Name}
+                  </Link>
+                </td>
+                <td>
+                  <button onClick={() => deleteProducts(products._id)}>Delete</button>
+                </td>
+              </tr>
+            )
+          })
+        }
+      </tbody>
+      </table>
+      <p>
+      </p>
+
     </>
   )
 }
 
 export async function getServerSideProps() {
-  // products.json is in /public
-  console.debug(`Fetching ${process.env.APIURL}product`)
-  const ret = await fetch(`${process.env.APIURL}product`)
-  const products = await ret.json()
-  console.log({ products })
-  return {
-    props: {
-      products
-    }
-  }
+  const rest = await fetch(`https://stock-next-nine.vercel.app/api/customer/product/`)
+  const product = await rest.json()
+  return { props: { product } }
 }

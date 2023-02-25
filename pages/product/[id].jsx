@@ -1,36 +1,32 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
 
-export default function ProductPage(props) {
-  const { product } = props;
+export default function Products({ products }) {
+  console.log('product 2', products)
+  if (!products) return (
+    <div>
+      <p>Loading...</p>
+      <Link href="/product">Back</Link>
+    </div>
+  );
 
-  if (!product) return (<div>Loading...</div>)
   return (
     <>
       <Head>
-        <title>Products</title>
+        <title>{products.Name}</title>
       </Head>
-      <h1>{product.title}</h1>
-      <div>
-        <p>${product.description}</p>
-        <p>${product.price}</p>
-      </div>
+      <h1>{products.Name}</h1>
+      <p>{products.Code}</p>
+      <p>{products.Price}</p>
       <Link href="/product">Back to Product List</Link>
     </>
   )
 }
 
-export async function getServerSideProps(context) {
-  console.log(`Fetching Product ID: ${context.params['id']}`)
-  console.debug(`Fetching ${process.env.APIURL}product/${context.params['id']}`)
-  const ret = await fetch(`${process.env.APIURL}product/${context.params['id']}`)
-  const product = await ret.json()
-  console.log(product)
-  return {
-    props: {
-      product
-    }
-  }
-
+export async function getServerSideProps({ param }) {
+  console.debug('param', param)
+  const rest = await fetch(`https://stock-next-nine.vercel.app/api/customer/product/${param.id}`)
+  const products = await rest.json()
+  console.debug('product 1', products)
+  return { props: { products } }
 }
