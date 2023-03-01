@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 export default function Home({ blogs }) {
 
     function deleteBlog(id) {
-        fetch(`https://stock-next-nine.vercel.app/api/blogs/articles/${id}`,
+        fetch(`api/blogs/articles/${id}`,
             {
                 method: 'DELETE'
             })
@@ -19,35 +19,42 @@ export default function Home({ blogs }) {
 
     return (
         <>
-            <Head>
-                <title>Blogs</title>
-            </Head>
-            <h1>Blogs</h1>
-            <table><tbody>
-                {
-                    blogs.map(blog => {
-                        return (
-                            <tr key={blog._id}>
-                                <td>
-                                    <Link href={`/blogs/${blog._id}`}>
-                                        {blog.title}
-                                    </Link>
-                                </td>
-                                <td>
-                                    <button onClick={() => deleteBlog(blog._id)}>Delete</button>
-                                </td>
-                            </tr>
-                        )
-                    })
-                }
-            </tbody>
-            </table>
-            <p>
-            </p>
-
+          <Head>
+            <title>Blogs</title>
+          </Head>
+          <h1>Blogs</h1>
+          <p style={{ margin: '0.4rem' }}>
+            <Link href="/blogs/add">+New Blog</Link>
+          </p>
+          <table><tbody>
+            {
+              blogs.map(blog => {
+                return (
+                  <tr key={blog._id}>
+                    <td>
+                      <Link href={`/blogs/${blog._id}`}>
+                        {blog.title}
+                      </Link>
+                    </td>
+                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>
+                      <Link href={`/blogs/update/${blog._id}`}>Update</Link>
+                      &nbsp;&nbsp;&nbsp;
+                      <button onClick={() => deleteBlog(blog._id)}>Delete</button>
+                    </td>
+                  </tr>
+                )
+              })
+            }
+          </tbody>
+          </table>
+          <p>
+          </p>
+    
         </>
-    )
-}
+      )
+    }
+
 export async function getServerSideProps() {
     const res = await fetch(`https://stock-next-nine.vercel.app/api/blogs/articles/`)
     const blogs = await res.json()
